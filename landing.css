@@ -1,5 +1,5 @@
 html{
-    background-color: burlywood;
+ 
 }
 
 #heading{
@@ -7,4 +7,9 @@ html{
     background-color: blueviol;
     font-size: 50;
 
+}
+
+footer, #button{
+    text-align: center;
+    
 }
