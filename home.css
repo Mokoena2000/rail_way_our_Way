@@ -1,9 +1,9 @@
 html{
-    background-color: brown;
+    background-color: burlywood
 }
-h1{
-    color: rgb(167, 135, 75);
-    text-align: center;
+.logo{
+    color: black;
+    margin-left: 20%;
 }
 
 p{
