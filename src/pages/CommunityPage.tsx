@@ -1,100 +1,97 @@
-import { useState } from 'react';
-import { MessageCircle, Plus, Radio } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Plus, Radio, Clock, Ban, Shield, Users, AlertTriangle, ThumbsUp } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Header } from '@/components/Header';
-import { IncidentCard, Incident } from '@/components/IncidentCard';
-import { ReportIncidentModal } from '@/components/ReportIncidentModal';
+import { Header } from '@/components/Header'; // Keeping your existing Header
+import { supabase } from '@/integrations/supabase/client';
+import { Station, IncidentWithStation, IncidentType } from '@/types/railway';
+import ReportModal from '@/components/ReportModal';
 import { toast } from 'sonner';
 
-// Mock incidents for development
-const mockIncidents: Incident[] = [
-  { 
-    id: '1', 
-    type: 'Delay',
-    title: 'Delay at Bellville',
-    description: 'Train is stuck at the platform, no announcements. Been waiting for 20 minutes now.',
-    station: 'Bellville',
-    created_at: new Date(Date.now() - 2 * 60000).toISOString(),
-    upvotes: 24
-  },
-  { 
-    id: '2', 
-    type: 'Cancelled',
-    title: 'Cancelled at Cape Town',
-    description: 'The 08:30 Southern Line service has been cancelled. Next train at 09:00.',
-    station: 'Cape Town',
-    created_at: new Date(Date.now() - 15 * 60000).toISOString(),
-    upvotes: 18
-  },
-  { 
-    id: '3', 
-    type: 'Safety',
-    title: 'Safety Alert at Salt River',
-    description: 'Platform is very clean today. New lighting installed makes it feel much safer.',
-    station: 'Salt River',
-    created_at: new Date(Date.now() - 45 * 60000).toISOString(),
-    upvotes: 12
-  },
-  { 
-    id: '4', 
-    type: 'Overcrowded',
-    title: 'Overcrowded at Observatory',
-    description: 'Peak hour rush. Trains are packed. Consider waiting for the next one.',
-    station: 'Observatory',
-    created_at: new Date(Date.now() - 60 * 60000).toISOString(),
-    upvotes: 8
-  },
-  { 
-    id: '5', 
-    type: 'Delay',
-    title: 'Delay at Claremont',
-    description: 'Signal failure causing 10 minute delays on the Southern Line.',
-    station: 'Claremont',
-    created_at: new Date(Date.now() - 90 * 60000).toISOString(),
-    upvotes: 15
-  },
-  { 
-    id: '6', 
-    type: 'Safety',
-    title: 'Safety Alert at Fish Hoek',
-    description: 'Security presence increased. Feeling much safer during evening commute.',
-    station: 'Fish Hoek',
-    created_at: new Date(Date.now() - 120 * 60000).toISOString(),
-    upvotes: 22
-  },
+// Mock Data to show before real DB data flows in
+const MOCK_REPORTS: IncidentWithStation[] = [
+  { id: '1', station_id: '1', station_name: 'Bellville', type: 'Delay', description: 'Train is stuck at the platform, no announcements. Been waiting for 20 mins.', upvotes: 24, created_at: '2 mins ago' },
+  { id: '2', station_id: '2', station_name: 'Cape Town', type: 'Cancellation', description: 'The 08:30 Southern Line service has been cancelled.', upvotes: 18, created_at: '15 mins ago' },
 ];
 
 export default function CommunityPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [incidents, setIncidents] = useState<Incident[]>(mockIncidents);
+  const [stations, setStations] = useState<Station[]>([]);
+  // Start with mock data, eventually replace with real fetch
+  const [reports, setReports] = useState<IncidentWithStation[]>(MOCK_REPORTS);
 
+  // 1. Fetch Real Stations from Supabase
+  useEffect(() => {
+    async function fetchStations() {
+      const { data, error } = await supabase
+        .from('stations')
+        .select('*')
+        .order('name');
+      
+      if (data) {
+        // Map Supabase data to your Station type if needed, or just use as is
+        setStations(data as unknown as Station[]);
+      }
+    }
+    fetchStations();
+  }, []);
+
+  // 2. Handle Upvote (Optimistic Update)
   const handleUpvote = (id: string) => {
-    setIncidents(prev => 
-      prev.map(incident => 
-        incident.id === id 
-          ? { ...incident, upvotes: incident.upvotes + 1 }
-          : incident
+    setReports(prev => 
+      prev.map(report => 
+        report.id === id 
+          ? { ...report, upvotes: report.upvotes + 1 }
+          : report
       )
     );
     toast.success('Upvoted!');
   };
 
-  const handleSubmitReport = (data: { type: string; station: string; description: string }) => {
-    const newIncident: Incident = {
-      id: Date.now().toString(),
-      type: data.type as Incident['type'],
-      title: `${data.type} at ${data.station}`,
-      description: data.description || 'No additional details provided.',
-      station: data.station,
-      created_at: new Date().toISOString(),
-      upvotes: 0
-    };
+  // 3. Handle New Report (The Fix is Here)
+  const handlePostReport = (data: { station_id: string; type: IncidentType; description: string }) => {
+    // FIX: Convert s.id to String() so it matches data.station_id
+    const stationName = stations.find(s => String(s.id) === data.station_id)?.name || 'Unknown Station';
     
-    setIncidents(prev => [newIncident, ...prev]);
+    const newReport: IncidentWithStation = {
+      id: Date.now().toString(),
+      station_id: data.station_id,
+      station_name: stationName,
+      type: data.type,
+      description: data.description,
+      upvotes: 0,
+      created_at: 'Just now',
+    };
+
+    setReports(prev => [newReport, ...prev]);
+    toast.success('Report submitted!', {
+      description: 'Thanks for helping fellow commuters.',
+    });
+  };
+
+  // Helper: Icon based on type
+  const getIcon = (type: IncidentType) => {
+    switch (type) {
+      case 'Delay': return <Clock className="text-yellow-600 w-5 h-5" />;
+      case 'Cancellation': return <Ban className="text-red-600 w-5 h-5" />;
+      case 'Safety': return <Shield className="text-green-600 w-5 h-5" />;
+      case 'Crowding': return <Users className="text-orange-600 w-5 h-5" />;
+      default: return <AlertTriangle className="text-gray-600 w-5 h-5" />;
+    }
+  };
+
+  // Helper: Badge color based on type
+  const getBadgeColor = (type: IncidentType) => {
+    switch (type) {
+      case 'Delay': return 'bg-yellow-100 border-yellow-200';
+      case 'Cancellation': return 'bg-red-100 border-red-200';
+      case 'Safety': return 'bg-green-100 border-green-200';
+      case 'Crowding': return 'bg-orange-100 border-orange-200';
+      default: return 'bg-gray-100 border-gray-200';
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-[#F4F1DE] pb-24">
       <Header 
         title="The Voice" 
         subtitle="Live Commuter Reports"
@@ -107,61 +104,76 @@ export default function CommunityPage() {
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center gap-2 mb-5"
         >
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-destructive/10 rounded-full">
-            <Radio className="w-4 h-4 text-destructive animate-pulse" />
-            <span className="text-sm font-bold text-destructive">LIVE</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-100 rounded-full border border-red-200">
+            <Radio className="w-4 h-4 text-red-600 animate-pulse" />
+            <span className="text-sm font-bold text-red-600">LIVE</span>
           </div>
-          <span className="text-sm text-muted-foreground">
-            {incidents.length} reports today
+          <span className="text-sm text-[#3D405B]/70">
+            {reports.length} reports today
           </span>
         </motion.div>
 
         {/* Incident Feed */}
-        {incidents.length > 0 ? (
-          <div className="space-y-3">
-            {incidents.map((incident, index) => (
-              <IncidentCard 
-                key={incident.id}
-                incident={incident}
-                index={index}
-                onUpvote={handleUpvote}
-              />
-            ))}
-          </div>
-        ) : (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-16 bg-card rounded-2xl border-2 border-foreground"
-          >
-            <MessageCircle className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
-            <p className="text-foreground font-bold text-lg">No reports yet</p>
-            <p className="text-muted-foreground text-sm mt-1">
-              Be the first to share what's happening!
-            </p>
-          </motion.div>
-        )}
+        <div className="space-y-4">
+          {reports.map((report, index) => (
+            <motion.div 
+              key={report.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="bg-white p-4 rounded-2xl shadow-sm border border-[#3D405B]/10"
+            >
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-xl border ${getBadgeColor(report.type)}`}>
+                    {getIcon(report.type)}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[#3D405B] leading-tight">
+                      {report.type} at {report.station_name}
+                    </h3>
+                    <span className="text-xs text-gray-400 font-medium">{report.created_at}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <p className="text-[#3D405B]/80 text-sm mb-4 pl-[3.25rem]">
+                {report.description}
+              </p>
+              
+              {/* Upvote Action */}
+              <div className="flex justify-end pl-[3.25rem]">
+                <button 
+                  onClick={() => handleUpvote(report.id)}
+                  className="flex items-center gap-1.5 text-sm font-semibold text-gray-400 hover:text-[#E07A5F] transition-colors group"
+                >
+                  <ThumbsUp className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <span>{report.upvotes} Helpful</span>
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </main>
 
       {/* Floating Action Button */}
       <motion.button
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.3, type: 'spring', stiffness: 300 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsModalOpen(true)}
-        className="fixed bottom-24 right-4 w-16 h-16 rounded-full bg-primary text-primary-foreground border-3 border-foreground neo-shadow flex items-center justify-center z-40"
-        style={{ borderWidth: '3px' }}
+        className="fixed bottom-24 right-4 w-16 h-16 rounded-full bg-[#E07A5F] hover:bg-[#D0694E] text-white border-4 border-[#F4F1DE] shadow-xl flex items-center justify-center z-40 transition-colors"
       >
         <Plus className="w-8 h-8" strokeWidth={2.5} />
       </motion.button>
 
-      {/* Report Modal */}
-      <ReportIncidentModal 
+      {/* The Corrected Report Modal */}
+      <ReportModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSubmitReport}
+        stations={stations}
+        onSubmit={handlePostReport}
       />
     </div>
   );
