@@ -21,6 +21,7 @@ export interface Trip {
   created_at: string;
 }
 
+// This is for specific scheduled train reports (e.g. "Train #123 is late")
 export interface Report {
   id: string;
   trip_id: string;
@@ -35,7 +36,30 @@ export interface TripWithStatus extends Trip {
   reportCount: number;
 }
 
-// Mock data for fallback
+// --- NEW ADDITIONS FOR COMMUNITY INCIDENTS ---
+// These allow users to report general issues (e.g. "Safety at Bellville")
+// without needing to know a specific Trip ID.
+
+export type IncidentType = 'Delay' | 'Cancellation' | 'Safety' | 'Crowding' | 'Other';
+
+export interface IncidentReport {
+  id: string;       // UUID from Supabase
+  user_id?: string; // Optional until we add Auth
+  station_id: string; // Where is this happening?
+  line_id?: string;   // Optional: Which line is affected?
+  type: IncidentType;
+  description: string;
+  upvotes: number;
+  created_at: string;
+}
+
+// A helper type for the UI Card (combines the report with the station name)
+export interface IncidentWithStation extends IncidentReport {
+  station_name: string; 
+}
+
+// --- MOCK DATA ---
+
 export const mockLines: Line[] = [
   { id: '1', name: 'Northern Line', color_code: '#FFD700', created_at: new Date().toISOString() },
   { id: '2', name: 'Southern Line', color_code: '#4CAF50', created_at: new Date().toISOString() },
