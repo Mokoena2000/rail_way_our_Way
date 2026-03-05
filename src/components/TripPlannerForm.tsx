@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, Clock, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useStations } from '@/hooks/useStations';
+import { lineColors } from '@/types/railway';
 import {
   Select,
   SelectContent,
@@ -26,18 +27,13 @@ export function TripPlannerForm() {
     '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
   ];
 
-  // Get unique station names
   const uniqueStations = stations
     ? [...new Map(stations.map(s => [s.name, s])).values()]
     : [];
 
   const handleSearch = () => {
     if (fromStation && toStation && departureTime) {
-      const searchParams = new URLSearchParams({
-        from: fromStation,
-        to: toStation,
-        time: departureTime,
-      });
+      const searchParams = new URLSearchParams({ from: fromStation, to: toStation, time: departureTime });
       navigate(`/search?${searchParams.toString()}`);
     }
   };
@@ -52,7 +48,6 @@ export function TripPlannerForm() {
       </h2>
 
       <div className="space-y-4">
-        {/* From Station */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
             <MapPin className="w-4 h-4" />
@@ -64,16 +59,9 @@ export function TripPlannerForm() {
             </SelectTrigger>
             <SelectContent className="bg-popover border-border max-h-64">
               {uniqueStations.map((station) => (
-                <SelectItem 
-                  key={station.id} 
-                  value={station.name}
-                  disabled={station.name === toStation}
-                >
+                <SelectItem key={station.id} value={station.name} disabled={station.name === toStation}>
                   <div className="flex items-center gap-2">
-                    <div 
-                      className="w-2 h-2 rounded-full" 
-                      style={{ backgroundColor: station.lines?.color_code || '#FFD700' }}
-                    />
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: lineColors[station.line_name] || '#FFD700' }} />
                     {station.name}
                   </div>
                 </SelectItem>
@@ -82,7 +70,6 @@ export function TripPlannerForm() {
           </Select>
         </div>
 
-        {/* To Station */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
             <MapPin className="w-4 h-4" />
@@ -94,16 +81,9 @@ export function TripPlannerForm() {
             </SelectTrigger>
             <SelectContent className="bg-popover border-border max-h-64">
               {uniqueStations.map((station) => (
-                <SelectItem 
-                  key={station.id} 
-                  value={station.name}
-                  disabled={station.name === fromStation}
-                >
+                <SelectItem key={station.id} value={station.name} disabled={station.name === fromStation}>
                   <div className="flex items-center gap-2">
-                    <div 
-                      className="w-2 h-2 rounded-full" 
-                      style={{ backgroundColor: station.lines?.color_code || '#FFD700' }}
-                    />
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: lineColors[station.line_name] || '#FFD700' }} />
                     {station.name}
                   </div>
                 </SelectItem>
@@ -112,7 +92,6 @@ export function TripPlannerForm() {
           </Select>
         </div>
 
-        {/* Time Selector */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
             <Clock className="w-4 h-4" />
@@ -124,21 +103,14 @@ export function TripPlannerForm() {
             </SelectTrigger>
             <SelectContent className="bg-popover border-border max-h-64">
               {timeOptions.map((time) => (
-                <SelectItem key={time} value={time}>
-                  {time}
-                </SelectItem>
+                <SelectItem key={time} value={time}>{time}</SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      <Button 
-        size="lg" 
-        className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground"
-        onClick={handleSearch}
-        disabled={!isValid}
-      >
+      <Button size="lg" className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleSearch} disabled={!isValid}>
         <Search className="w-5 h-5 mr-2" />
         Find Trains
       </Button>

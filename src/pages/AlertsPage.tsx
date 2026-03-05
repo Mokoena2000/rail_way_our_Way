@@ -16,8 +16,6 @@ const AlertsPage = () => {
         title="Live Alerts" 
         subtitle="Recent reports from commuters"
       />
-
-      /// TODO: Add filter options for different lines or alert types
       
       <main className="container max-w-lg mx-auto px-4 py-6">
         <div className="flex items-center gap-2 mb-6">

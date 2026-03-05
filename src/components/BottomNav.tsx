@@ -1,6 +1,7 @@
-import { Home, List, Users, Menu, LucideIcon } from 'lucide-react';
+import { Home, List, Users, Menu, UserCircle, LucideIcon } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface NavItem {
   icon: LucideIcon;
@@ -12,6 +13,7 @@ const navItems: NavItem[] = [
   { icon: Home, label: 'Home', path: '/' },
   { icon: List, label: 'Schedule', path: '/schedule' },
   { icon: Users, label: 'Community', path: '/community' },
+  { icon: UserCircle, label: 'Profile', path: '/auth' },
   { icon: Menu, label: 'More', path: '/more' },
 ];
 

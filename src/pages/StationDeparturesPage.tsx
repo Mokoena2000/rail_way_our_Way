@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/Supabase/supabase';
 import { ArrowLeft, Train, Moon } from 'lucide-react';
 import { DepartureCard } from '@/components/DepartureCard';
 import { Skeleton } from '@/components/ui/skeleton';

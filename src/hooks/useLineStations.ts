@@ -1,22 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/Supabase/supabase';
 import { Station } from '@/types/railway';
 
-export function useLineStations(lineId: string | null) {
+export function useLineStations(lineName: string | null) {
   return useQuery({
-    queryKey: ['stations', lineId],
+    queryKey: ['stations', lineName],
     queryFn: async () => {
-      if (!lineId) return [];
+      if (!lineName) return [];
       
       const { data, error } = await supabase
         .from('stations')
         .select('*')
-        .eq('line_id', lineId)
-        .order('created_at');
+        .eq('line_name', lineName)
+        .order('name');
       
       if (error) throw error;
       return (data || []) as Station[];
     },
-    enabled: !!lineId,
+    enabled: !!lineName,
   });
 }

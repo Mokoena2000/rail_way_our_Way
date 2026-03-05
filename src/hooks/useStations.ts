@@ -1,37 +1,50 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/Supabase/supabase'; // Manual Client
 import { Station } from '@/types/railway';
 
+/**
+ * Fetches all 63 Cape Town stations seeded in the manual database.
+ */
 export function useStations() {
   return useQuery({
     queryKey: ['stations'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('stations')
-        .select('*, lines:line_id(name, color_code)')
+        .select('*')
         .order('name');
       
-      if (error) throw error;
-      return data as (Station & { lines: { name: string; color_code: string } })[];
+      if (error) {
+        console.error("Backend Error [useStations]:", error.message);
+        throw error;
+      }
+      return (data || []) as Station[];
     },
+    staleTime: 1000 * 60 * 10, // Stations rarely change; cache for 10 mins
   });
 }
 
-export function useStationsByLine(lineId: string | null) {
+/**
+ * Filters stations by their specific line (Southern, Northern, etc.).
+ */
+export function useStationsByLine(lineName: string | null) {
   return useQuery({
-    queryKey: ['stations', lineId],
+    queryKey: ['stations', lineName],
     queryFn: async () => {
-      if (!lineId) return [];
+      if (!lineName) return [];
       
       const { data, error } = await supabase
         .from('stations')
         .select('*')
-        .eq('line_id', lineId)
+        .eq('line_name', lineName)
         .order('name');
       
-      if (error) throw error;
-      return data as Station[];
+      if (error) {
+        console.error("Backend Error [useStationsByLine]:", error.message);
+        throw error;
+      }
+      return (data || []) as Station[];
     },
-    enabled: !!lineId,
+    enabled: !!lineName,
   });
 }

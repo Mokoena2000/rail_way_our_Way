@@ -1,113 +1,73 @@
-# 🚂 Railway Our Way
+# Welcome to your Lovable project
 
-![Project Status](https://img.shields.io/badge/Status-Active_Development-brightgreen)
-![Tech Stack](https://img.shields.io/badge/Stack-React_|_Supabase_|_TypeScript-blue)
-![License](https://img.shields.io/badge/License-MIT-orange)
+## Project info
 
-> **"For the people, by the people."**
-> A community-powered train schedule and alert system designed for Cape Town commuters.
+**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
 
----
+## How can I edit this code?
 
-## 📖 About The Project
+There are several ways of editing your application.
 
-**Railway Our Way** is a modern, mobile-first Progressive Web App (PWA) built to solve the frustration of unreliable train updates. Unlike static schedules, this app combines official timetables with **real-time crowd-sourced reports**.
+**Use Lovable**
 
-Commuters can check schedules, see live departure boards, and warn fellow travelers about delays, cancellations, or safety concerns instantly.
+Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
 
-### 🌟 Key Features
-* **📍 Trip Planner:** Smart routing logic (Inbound/Outbound) with estimated fares.
-* **📢 Community Alerts:** Live "Waze-like" reporting for delays and safety incidents.
-* **🚉 Live Departures:** Digital "Station Board" showing upcoming trains for any specific stop.
-* **🎨 Golden Hour UI:** A warm, high-contrast "Neobrutalism" design optimized for sunlight visibility.
-* **⚡ Offline Ready:** Built as a PWA to work with spotty network connections.
+Changes made via Lovable will be committed automatically to this repo.
 
----
+**Use your preferred IDE**
 
-## 🛠️ Tech Stack
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-This project uses a modern, scalable architecture designed for speed and developer experience.
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-* **Frontend:** React 18, Vite, TypeScript
-* **Styling:** Tailwind CSS (Custom "Golden Hour" Theme), Lucide React (Icons)
-* **State & Animation:** Framer Motion, React Router DOM
-* **Backend:** Supabase (PostgreSQL)
-* **Realtime:** Supabase Realtime (WebSockets)
-* **Authentication:** Supabase Auth
+Follow these steps:
 
----
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
 
-## 🚀 Getting Started
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
 
-Follow these steps to get a local copy up and running.
+# Step 3: Install the necessary dependencies.
+npm i
 
-### Prerequisites
-* Node.js (v18 or higher)
-* npm (v9 or higher)
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
+```
 
-### Installation
+**Edit a file directly in GitHub**
 
-1.  **Clone the repository**
-    ```bash
-    git clone [https://github.com/YOUR_USERNAME/railway-our-way.git](https://github.com/YOUR_USERNAME/railway-our-way.git)
-    cd railway-our-way
-    ```
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-2.  **Install dependencies**
-    ```bash
-    npm install
-    ```
+**Use GitHub Codespaces**
 
-3.  **Configure Environment Variables**
-    Create a `.env` file in the root directory and add your Supabase keys:
-    ```env
-    VITE_SUPABASE_URL=your_supabase_project_url
-    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-    ```
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-4.  **Run the development server**
-    ```bash
-    npm run dev
-    ```
+## What technologies are used for this project?
 
-5.  Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
+This project is built with:
 
----
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-## 📂 Project Structure
+## How can I deploy this project?
 
-```text
-src/
-├── components/      # Reusable UI components (Cards, Modals, Buttons)
-├── pages/           # Main Views (Home, Schedule, Community)
-├── lib/             # Supabase client & utility functions
-├── hooks/           # Custom React hooks (useStations, useReports)
-└── styles/          # Tailwind configuration & global CSS
-🗺️ Roadmap
-[x] Phase 1: Core Architecture (Vite + Supabase Connection)
+Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
 
-[x] Phase 2: Trip Planner Logic (Direction & Time Filtering)
+## Can I connect a custom domain to my Lovable project?
 
-[ ] Phase 3: Community Reporting (Live Incidents Feed)
+Yes, you can!
 
-[ ] Phase 4: User Authentication & Profiles
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-[ ] Phase 5: PWA Offline Caching & Push Notifications
-
-🤝 Contributing
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
-
-Fork the Project
-
-Create your Feature Branch (git checkout -b feature/AmazingFeature)
-
-Commit your Changes (git commit -m 'Add some AmazingFeature')
-
-Push to the Branch (git push origin feature/AmazingFeature)
-
-Open a Pull Request
-
-📧 Contact
-Project Lead: [Moholeng Mokoena] - [https://www.linkedin.com/in/moholeng-mokoena-00a097278/] Project Link:https://github.com/Mokoena2000/rail-way-our-way
-
-Built with ❤️ in Cape Town.
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)

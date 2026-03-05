@@ -1,14 +1,14 @@
+export interface Station {
+  id: number;
+  name: string;
+  line_name: string;
+  created_at: string;
+}
+
 export interface Line {
   id: string;
   name: string;
   color_code: string;
-  created_at: string;
-}
-
-export interface Station {
-  id: string;
-  name: string;
-  line_id: string;
   created_at: string;
 }
 
@@ -21,12 +21,25 @@ export interface Trip {
   created_at: string;
 }
 
-// This is for specific scheduled train reports (e.g. "Train #123 is late")
 export interface Report {
   id: string;
-  trip_id: string;
-  status: 'on_time' | 'delayed' | 'cancelled';
+  station_id: number;
+  user_id: string | null;
+  type: 'Delay' | 'Cancellation' | 'Safety' | 'Crowding' | 'Other';
+  description: string | null;
+  upvotes: number;
   created_at: string;
+}
+
+export interface ReportWithStation extends Report {
+  stations: { name: string } | null;
+}
+
+export interface Profile {
+  id: string;
+  username: string | null;
+  avatar_url: string | null;
+  updated_at: string;
 }
 
 export type TripStatus = 'scheduled' | 'on_time' | 'delayed' | 'cancelled';
@@ -36,46 +49,19 @@ export interface TripWithStatus extends Trip {
   reportCount: number;
 }
 
-// --- NEW ADDITIONS FOR COMMUNITY INCIDENTS ---
-// These allow users to report general issues (e.g. "Safety at Bellville")
-// without needing to know a specific Trip ID.
-
-export type IncidentType = 'Delay' | 'Cancellation' | 'Safety' | 'Crowding' | 'Other';
-
-export interface IncidentReport {
-  id: string;       // UUID from Supabase
-  user_id?: string; // Optional until we add Auth
-  station_id: string; // Where is this happening?
-  line_id?: string;   // Optional: Which line is affected?
-  type: IncidentType;
-  description: string;
-  upvotes: number;
-  created_at: string;
-}
-
-// A helper type for the UI Card (combines the report with the station name)
-export interface IncidentWithStation extends IncidentReport {
-  station_name: string; 
-}
-
-// --- MOCK DATA ---
+// Line color mapping
+export const lineColors: Record<string, string> = {
+  'Southern': '#81B29A',
+  'Northern': '#E07A5F',
+  'Cape Flats': '#3D90D4',
+  'Central': '#3D405B',
+};
 
 export const mockLines: Line[] = [
-  { id: '1', name: 'Northern Line', color_code: '#FFD700', created_at: new Date().toISOString() },
-  { id: '2', name: 'Southern Line', color_code: '#4CAF50', created_at: new Date().toISOString() },
-  { id: '3', name: 'Cape Flats', color_code: '#2196F3', created_at: new Date().toISOString() },
-  { id: '4', name: 'Central Line', color_code: '#FF5722', created_at: new Date().toISOString() },
+  { id: '1', name: 'Northern Line', color_code: '#E07A5F', created_at: new Date().toISOString() },
+  { id: '2', name: 'Southern Line', color_code: '#81B29A', created_at: new Date().toISOString() },
+  { id: '3', name: 'Cape Flats', color_code: '#3D90D4', created_at: new Date().toISOString() },
+  { id: '4', name: 'Central Line', color_code: '#3D405B', created_at: new Date().toISOString() },
 ];
 
-export const mockTrips: Trip[] = [
-  { id: '1', line_id: '1', departure_time: '07:30:00', origin: 'Bellville', destination: 'Cape Town', created_at: new Date().toISOString() },
-  { id: '2', line_id: '1', departure_time: '08:00:00', origin: 'Bellville', destination: 'Cape Town', created_at: new Date().toISOString() },
-  { id: '3', line_id: '1', departure_time: '08:30:00', origin: 'Bellville', destination: 'Cape Town', created_at: new Date().toISOString() },
-  { id: '4', line_id: '1', departure_time: '09:00:00', origin: 'Bellville', destination: 'Cape Town', created_at: new Date().toISOString() },
-  { id: '5', line_id: '1', departure_time: '09:30:00', origin: 'Bellville', destination: 'Cape Town', created_at: new Date().toISOString() },
-  { id: '6', line_id: '2', departure_time: '07:15:00', origin: 'Simon\'s Town', destination: 'Cape Town', created_at: new Date().toISOString() },
-  { id: '7', line_id: '2', departure_time: '08:15:00', origin: 'Simon\'s Town', destination: 'Cape Town', created_at: new Date().toISOString() },
-  { id: '8', line_id: '3', departure_time: '07:45:00', origin: 'Khayelitsha', destination: 'Cape Town', created_at: new Date().toISOString() },
-  { id: '9', line_id: '3', departure_time: '08:45:00', origin: 'Khayelitsha', destination: 'Cape Town', created_at: new Date().toISOString() },
-  { id: '10', line_id: '4', departure_time: '07:00:00', origin: 'Eerste River', destination: 'Cape Town', created_at: new Date().toISOString() },
-];
+export const mockTrips: Trip[] = [];
